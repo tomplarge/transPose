@@ -132,13 +132,17 @@ export default class Home extends Component {
     likes[likeeId] = likeState;
     this.setState({likes: likes});
     firebase.database().ref('likes/' + likerId + '/' + likeeId).set(likeState);
+
+    var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
     if (likeState) {
-      var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
       theyLikeYouTooRef.on('value', function(snapshot) {
-        if (snapshot.val() == true && likeState == true) {
+        if (snapshot.val() == true) {
           alert('They like you too!');
         }
       });
+    }
+    else {
+      theyLikeYouTooRef.off();
     }
   }
 
