@@ -98,14 +98,13 @@ export default class Home extends Component {
     var likerId = firebase.auth().currentUser.uid;
     var likeeId = this.state.userIds[this.state.currIdx];
     firebase.database().ref('likes/' + likerId + '/' + likeeId).set(true);
-    firebase.database().ref('liked_by/' + likeeId + '/' + likerId).set(true);
     alert('You Liked Them!');
-    var theyLikeYouTooRef = firebase.database().ref('liked_by/' + likerId + '/' + likeeId);
+    var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
     theyLikeYouTooRef.on('value', function(snapshot) {
       if (snapshot.val() == true) {
         alert('They like you too!');
       }
-    })
+    });
   }
 
   render() {
