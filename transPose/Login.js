@@ -59,7 +59,7 @@ export default class Login extends Component {
 
   login = () => {
     // Log in and display an alert to tell the user what happened.
-    this.firebaseApp.auth().signInWithEmailAndPassword("tom3@aol.com", "password2" //"tom@yom.dom", "Passssssss"
+    this.firebaseApp.auth().signInWithEmailAndPassword("tom@yom.dom", "Passssssss" // "tom3@aol.com", "password2" //
     ).then((userData) =>
       {
         Actions.home({firebaseApp: this.firebaseApp});

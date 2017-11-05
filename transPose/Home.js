@@ -121,21 +121,28 @@ export default class Home extends Component {
     }
   }
 
-  likePic = () => {
+  likeUnlikePic = () => {
     var likerId = firebase.auth().currentUser.uid;
     var likeeId = this.state.userIds[this.state.currIdx];
     var likes = this.state.likes;
-    likes[likeeId] = true;
+    var likeState = true
+    if (likes[likeeId]) {
+      likeState = false
+    }
+    likes[likeeId] = likeState;
     this.setState({likes: likes});
-    firebase.database().ref('likes/' + likerId + '/' + likeeId).set(true);
-    alert('You Liked Them!');
-    var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
-    theyLikeYouTooRef.on('value', function(snapshot) {
-      if (snapshot.val() == true) {
-        alert('They like you too!');
-      }
-    });
+    firebase.database().ref('likes/' + likerId + '/' + likeeId).set(likeState);
+    if (likeState) {
+      var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
+      theyLikeYouTooRef.on('value', function(snapshot) {
+        if (snapshot.val() == true) {
+          alert('They like you too!');
+        }
+      });
+    }
   }
+
+
 
   render() {
     console.log(this.state);
@@ -149,7 +156,7 @@ export default class Home extends Component {
           <TouchableOpacity style = {styles.button} onPress = {() => {this.prevPic()}}>
             <Icon name = "arrow-back" size = {25} color = {BLUE}/>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.button} onPress = {() => {this.likePic()}}>
+          <TouchableOpacity style = {styles.button} onPress = {() => {this.likeUnlikePic()}}>
             <CommunityIcon name = "heart" size = {25} color = {this.state.likes[this.state.userIds[this.state.currIdx]] ? PINK : BLUE}/>
           </TouchableOpacity>
           <TouchableOpacity style = {styles.button} onPress = {() => {this.nextPic()}}>
