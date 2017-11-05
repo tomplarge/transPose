@@ -19,7 +19,7 @@ const PINK = "#E89DC5"
 const BLUE = "#83C9DB"
 const screen = Dimensions.get('window');
 
-export default class Login extends Component {
+export default class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,7 +44,7 @@ export default class Login extends Component {
         location: this.state.location,
         images: ['0']
       });
-      Actions.home();
+      Actions.home({firebaseApp: this.props.firebaseApp});
     }
   }
 

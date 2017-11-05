@@ -22,7 +22,7 @@ const PINK = "#E89DC5"
 const BLUE = "#83C9DB"
 const screen = Dimensions.get('window');
 
-export default class Login extends Component {
+export default class Home extends Component {
   constructor(props) {
     super(props);
 
@@ -30,18 +30,36 @@ export default class Login extends Component {
       photoURI: null,
       userIds: [],
       currIdx: null,
+      users: null,
     }
   }
 
   componentDidMount() {
-    this.getUserIds();
+    this.getUsers();
   }
 
-  async getUserIds() {
+  async getUsers() {
     var ref = firebase.database().ref('users/');
+    var firebaseApp = this.props.firebaseApp;
+
     await ref.once("value", (snapshot) => {
-      var userIds = Object.keys(snapshot.val());
-      this.setState({userIds: userIds, currIdx: 0});
+      var users = {};
+      var currUserId = firebaseApp.auth().currentUser.uid;
+      var currUser = snapshot.val()[currUserId];
+      var userIds = [];
+      // console.log('curruser: ', currUser);
+      snapshot.forEach((user) => {
+        let u = user.val();
+        let uid = user.key;
+        // console.log(users);
+        console.log(u.transitioning_to, currUser.transitioning_to, u.transitioning_to != currUser.transitioning_to && u.location == currUser.location);
+        if (u.transitioning_to != currUser.transitioning_to && u.location == currUser.location) {
+          // console.log(uid);
+          users[uid] = u;
+          userIds.push(uid);
+        }
+      })
+      this.setState({users: users, userIds: userIds, currIdx: 0});
       this.downloadImage(0);
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
@@ -81,7 +99,6 @@ export default class Login extends Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <View style={styles.container}>
         <View style={styles.welcome}>
