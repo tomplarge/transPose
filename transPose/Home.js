@@ -135,7 +135,7 @@ export default class Home extends Component {
     if (likeState) {
       var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
       theyLikeYouTooRef.on('value', function(snapshot) {
-        if (snapshot.val() == true) {
+        if (snapshot.val() == true && likeState == true) {
           alert('They like you too!');
         }
       });
