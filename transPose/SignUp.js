@@ -42,7 +42,8 @@ export default class SignUp extends Component {
         email: user.email,
         transitioning_to: this.state.transitioning_to,
         location: this.state.location,
-        images: ['0']
+        images: ['0'],
+        name: this.state.name,
       });
       Actions.home({firebaseApp: this.props.firebaseApp});
     }
