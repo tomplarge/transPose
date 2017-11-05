@@ -62,7 +62,7 @@ export default class Login extends Component {
     this.firebaseApp.auth().signInWithEmailAndPassword("tom@yom.dom", "Passssssss"
     ).then((userData) =>
       {
-        Actions.home();
+        Actions.home({firebaseApp: this.firebaseApp});
       }
     ).catch((error) =>
       {
