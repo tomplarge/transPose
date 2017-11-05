@@ -30,7 +30,8 @@ export default class Home extends Component {
       photoURI: null,
       userIds: [],
       currIdx: null,
-      users: null,
+      users: {},
+      likes: {},
     }
   }
 
@@ -41,26 +42,47 @@ export default class Home extends Component {
   async getUsers() {
     var ref = firebase.database().ref('users/');
     var firebaseApp = this.props.firebaseApp;
+    var currUserId = firebaseApp.auth().currentUser.uid;
 
     await ref.once("value", (snapshot) => {
       var users = {};
-      var currUserId = firebaseApp.auth().currentUser.uid;
       var currUser = snapshot.val()[currUserId];
       var userIds = [];
-      // console.log('curruser: ', currUser);
+      var likes = {}
+
       snapshot.forEach((user) => {
         let u = user.val();
         let uid = user.key;
-        // console.log(users);
-        console.log(u.transitioning_to, currUser.transitioning_to, u.transitioning_to != currUser.transitioning_to && u.location == currUser.location);
+        likes[uid] = false;
+
         if (u.transitioning_to != currUser.transitioning_to && u.location == currUser.location) {
-          // console.log(uid);
           users[uid] = u;
           userIds.push(uid);
         }
       })
-      this.setState({users: users, userIds: userIds, currIdx: 0});
+
+      this.setState({users: users, userIds: userIds, currIdx: 0, likes: likes});
       this.downloadImage(0);
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+    })
+
+    var likesRef = firebase.database().ref('likes/' + currUserId);
+
+    await likesRef.once("value", (snapshot) => {
+      if (snapshot.val()) {
+        var uids = Object.keys(snapshot.val());
+        var likes = {}
+
+        for (var idx = 0; idx < uids.length; idx++) {
+          console.log('val: ', snapshot.val()[uids[idx]])
+          if (snapshot.val()[uids[idx]]) {
+            likes[uids[idx]] = true;
+          }
+        }
+        console.log('likes:', likes)
+        this.setState({likes: likes});
+      }
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     })
@@ -74,7 +96,12 @@ export default class Home extends Component {
 
   renderImage = () => {
     if (this.state.photoURI != null) {
-      return (<Image style = {styles.photo} source = {{uri: this.state.photoURI}}/>)
+      return (
+        <View style = {styles.photoContainer}>
+          <Text style = {styles.photoText}>{this.state.users[this.state.userIds[this.state.currIdx]].name}</Text>
+          <Image style = {styles.photo} source = {{uri: this.state.photoURI}}/>
+        </View>
+      )
     }
   }
 
@@ -97,6 +124,9 @@ export default class Home extends Component {
   likePic = () => {
     var likerId = firebase.auth().currentUser.uid;
     var likeeId = this.state.userIds[this.state.currIdx];
+    var likes = this.state.likes;
+    likes[likeeId] = true;
+    this.setState({likes: likes});
     firebase.database().ref('likes/' + likerId + '/' + likeeId).set(true);
     alert('You Liked Them!');
     var theyLikeYouTooRef = firebase.database().ref('likes/' + likeeId + '/' + likerId);
@@ -108,6 +138,7 @@ export default class Home extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <View style={styles.container}>
         <View style={styles.welcome}>
@@ -119,7 +150,7 @@ export default class Home extends Component {
             <Icon name = "arrow-back" size = {25} color = {BLUE}/>
           </TouchableOpacity>
           <TouchableOpacity style = {styles.button} onPress = {() => {this.likePic()}}>
-            <CommunityIcon name = "heart" size = {25} color = {BLUE}/>
+            <CommunityIcon name = "heart" size = {25} color = {this.state.likes[this.state.userIds[this.state.currIdx]] ? PINK : BLUE}/>
           </TouchableOpacity>
           <TouchableOpacity style = {styles.button} onPress = {() => {this.nextPic()}}>
             <Icon name = "arrow-forward" size = {25} color = {BLUE}/>
@@ -149,11 +180,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: PINK,
   },
+  photoContainer: {
+    position: 'absolute',
+    top: 120,
+  },
+  photoText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: BLUE,
+    position: 'absolute',
+    alignSelf: 'center',
+    top: 0,
+  },
   photo: {
     height: 350,
     width: 250,
-    position: 'absolute',
-    top: 100,
   },
   buttonsContainer: {
     position: 'absolute',
