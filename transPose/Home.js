@@ -77,7 +77,17 @@ export default class Login extends Component {
   }
 
   likePic = () => {
-    alert('You Liked Them!')
+    var likerId = firebase.auth().currentUser.uid;
+    var likeeId = this.state.userIds[this.state.currIdx];
+    firebase.database().ref('likes/' + likerId + '/' + likeeId).set(true);
+    firebase.database().ref('liked_by/' + likeeId + '/' + likerId).set(true);
+    alert('You Liked Them!');
+    var theyLikeYouTooRef = firebase.database().ref('liked_by/' + likerId + '/' + likeeId);
+    theyLikeYouTooRef.on('value', function(snapshot) {
+      if (snapshot.val() == true) {
+        alert('They like you too!');
+      }
+    })
   }
 
   render() {
