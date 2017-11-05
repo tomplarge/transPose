@@ -42,6 +42,7 @@ export default class Login extends Component {
         email: user.email,
         transitioning_to: this.state.transitioning_to,
         location: this.state.location,
+        images: ['0']
       });
       Actions.home();
     }

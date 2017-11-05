@@ -59,7 +59,7 @@ export default class Login extends Component {
 
   login = () => {
     // Log in and display an alert to tell the user what happened.
-    this.firebaseApp.auth().signInWithEmailAndPassword(this.state.email, this.state.password
+    this.firebaseApp.auth().signInWithEmailAndPassword("tom3@aol.com", "password2"
     ).then((userData) =>
       {
         Actions.home();
@@ -107,7 +107,7 @@ export default class Login extends Component {
               <Text style = {{color: 'white', fontWeight: 'bold'}}>Login</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style = {{alignSelf: 'center', paddingTop: 20}} onPress = {console.log(this.state.email, this.state.password)}>
+          <TouchableOpacity style = {{alignSelf: 'center', paddingTop: 20}} onPress = {() => {alert("sucks to suck.")}}>
             <Text style = {{color: PINK, textDecorationLine: 'underline'}}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
