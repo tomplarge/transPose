@@ -182,7 +182,9 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     position: 'absolute',
-    top: 120,
+    top: 80,
+    height: 400,
+    alignItems: 'center'
   },
   photoText: {
     textAlign: 'center',
@@ -196,6 +198,8 @@ const styles = StyleSheet.create({
   photo: {
     height: 350,
     width: 250,
+    bottom: 0,
+    position: 'absolute'
   },
   buttonsContainer: {
     position: 'absolute',
